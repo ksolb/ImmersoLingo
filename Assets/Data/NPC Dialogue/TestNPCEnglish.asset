@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d90b47436c6c120429fdc387a5b457df, type: 3}
+  m_Name: TestNPCEnglish
+  m_EditorClassIdentifier: Assembly-CSharp::NPCDialogueData
+  npcName: Carlos
+  nodes:
+  - nodeId: 0
+    spanishLine: Hello
+    englishHint: 
+    options:
+    - responseText: Hi How are you
+      nextNodeId: 10
+      endsConversation: 0
+  - nodeId: 10
+    spanishLine: 'Great thank you, what can I get for you '
+    englishHint: 
+    options:
+    - responseText: Soda please
+      nextNodeId: 20
+      endsConversation: 0
+    - responseText: Juice please
+      nextNodeId: 30
+      endsConversation: 0
+  - nodeId: 20
+    spanishLine: One Soda comming up
+    englishHint: 
+    options:
+    - responseText: 'Thank you '
+      nextNodeId: 0
+      endsConversation: 1
+  - nodeId: 30
+    spanishLine: 'One juice comming up  '
+    englishHint: 
+    options:
+    - responseText: 'Thank you '
+      nextNodeId: 0
+      endsConversation: 1
+  startNodeId: 0
