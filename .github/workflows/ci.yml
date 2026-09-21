@@ -21,7 +21,7 @@ jobs:
           type "%GITHUB_WORKSPACE%\unity_build.log"
 
       - name: Fail on compile errors
-        shell: pwsh
+        shell: powershell
         run: |
           $log = Get-Content "$env:GITHUB_WORKSPACE\unity_build.log" -Raw
           if ($log -match "error CS\d+") {
