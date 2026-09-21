@@ -14,7 +14,20 @@ jobs:
         with:
           lfs: true
 
-      - name: Build project
-        uses: game-ci/unity-builder@v4
-        with:
-          targetPlatform: StandaloneWindows64
+      - name: Compile project
+        shell: cmd
+        run: |
+          "C:\Program Files\Unity\Hub\Editor\6000.3.18f1\Editor\Unity.exe" -batchmode -nographics -quit -projectPath "%GITHUB_WORKSPACE%" -logFile "%GITHUB_WORKSPACE%\unity_build.log"
+          type "%GITHUB_WORKSPACE%\unity_build.log"
+
+      - name: Fail on compile errors
+        shell: powershell
+        run: |
+          $log = Get-Content "$env:GITHUB_WORKSPACE\unity_build.log" -Raw
+          if ($log -match "error CS\d+") {
+            Write-Host "Compile errors found:"
+            Select-String -Path "$env:GITHUB_WORKSPACE\unity_build.log" -Pattern "error CS\d+"
+            exit 1
+          } else {
+            Write-Host "No compile errors found."
+          }
