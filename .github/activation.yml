@@ -1,0 +1,16 @@
+# .github/workflows/activation.yml
+name: Acquire activation file
+on:
+  workflow_dispatch: {}
+jobs:
+  activation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: game-ci/unity-request-activation-file@v2
+        id: activation
+        with:
+          unityVersion: 6000.3.18f1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: activation-file
+          path: ${{ steps.activation.outputs.filePath }}
