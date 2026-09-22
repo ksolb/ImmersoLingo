@@ -16,9 +16,7 @@ MonoBehaviour:
   nodes:
   - nodeId: 0
     spanishLine: Hello
-    englishHint: 'this is a hint
-
-'
+    englishHint: 
     options:
     - responseText: Hi, How are you
       nextNodeId: 10
