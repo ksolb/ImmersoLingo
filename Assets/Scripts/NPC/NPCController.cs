@@ -28,7 +28,7 @@ public class NPCController : MonoBehaviour
         // uses XR interactive toolkit to show interactions
         interactable.hoverEntered.AddListener(OnHoverEntered);
         interactable.hoverExited.AddListener(OnHoverExited);
-        interactable.selectEntered.AddListener(OnSelectEntered);
+        interactable.activated.AddListener(OnActivated);   // trigger (needs Allow Hovered Activate on the interactors)
 
         // listen for the UI telling us which response the player picked
         dialogueUI.OnOptionSelected += HandleOptionSelected;
@@ -39,7 +39,7 @@ public class NPCController : MonoBehaviour
         // Always unsubscribe to avoid errors/leaks when this object is disabled or destroyed
         interactable.hoverEntered.RemoveListener(OnHoverEntered);
         interactable.hoverExited.RemoveListener(OnHoverExited);
-        interactable.selectEntered.RemoveListener(OnSelectEntered);
+        interactable.activated.RemoveListener(OnActivated);
         dialogueUI.OnOptionSelected -= HandleOptionSelected;
     }
 
@@ -59,7 +59,8 @@ public class NPCController : MonoBehaviour
         promptPanel.SetActive(false);
     }
 
-    private void OnSelectEntered(SelectEnterEventArgs args)
+    // trigger pulled while pointing at the NPC
+    private void OnActivated(ActivateEventArgs args)
     {
         if (currentState == State.Talking) return;   // in a conversation
 
