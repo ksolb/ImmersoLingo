@@ -1,3 +1,4 @@
+using System.Linq;   // VOICE
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -13,6 +14,7 @@ public class NPCController : MonoBehaviour
 
     private XRSimpleInteractable interactable;
     private DialogueNode currentNode;
+    private VoskSpeechToText speech;          // VOICE: shared recognizer in the scene
 
     // Simple state machine — mirrors the Idle -> PromptVisible -> Talking flow we designed.
     private enum State { Idle, PromptVisible, Talking }
@@ -21,6 +23,7 @@ public class NPCController : MonoBehaviour
     private void Awake()
     {
         interactable = GetComponent<XRSimpleInteractable>();
+        speech = FindFirstObjectByType<VoskSpeechToText>();   // VOICE: prefabs can't reference scene objects, so find it
     }
 
     private void OnEnable()
@@ -32,6 +35,8 @@ public class NPCController : MonoBehaviour
 
         // listen for the UI telling us which response the player picked
         dialogueUI.OnOptionSelected += HandleOptionSelected;
+
+        if (speech != null) speech.OnTranscriptionResult += HandleSpeech;   // VOICE
     }
 
     private void OnDisable()
@@ -41,6 +46,8 @@ public class NPCController : MonoBehaviour
         interactable.hoverExited.RemoveListener(OnHoverExited);
         interactable.activated.RemoveListener(OnActivated);
         dialogueUI.OnOptionSelected -= HandleOptionSelected;
+
+        if (speech != null) speech.OnTranscriptionResult -= HandleSpeech;   // VOICE
     }
 
     private void OnHoverEntered(HoverEnterEventArgs args)
@@ -92,6 +99,18 @@ public class NPCController : MonoBehaviour
         {
             ShowNode(dialogueData.GetNode(chosen.nextNodeId));
         }
+    }
+
+    // Vosk heard something if it matches a response option, treat it like clicking that button
+    private void HandleSpeech(string json)
+    {
+        Debug.Log("Heard: " + json);   // remove once it's working
+        if (currentState != State.Talking) return;   // only the NPC you're talking to listens
+
+        var heard = SpeechOptionMatcher.ParseVoskResult(json);
+        var optionTexts = currentNode.options.Select(o => o.responseText).ToList();
+        int index = SpeechOptionMatcher.Match(heard, optionTexts);
+        if (index >= 0) HandleOptionSelected(index);   // same path as clicking a button
     }
 
     // resets state and hides panel
