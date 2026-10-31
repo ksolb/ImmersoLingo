@@ -11,6 +11,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using Vosk;
+#if UNITY_ANDROID && !UNITY_EDITOR
+using UnityEngine.Android;
+#endif
 
 public class VoskSpeechToText : MonoBehaviour
 {
@@ -129,6 +132,7 @@ public class VoskSpeechToText : MonoBehaviour
 	private IEnumerator DoStartVoskStt(bool startMicrophone)
 	{
 		_isInitializing = true;
+		yield return RequestMicrophonePermission();
 		yield return WaitForMicrophoneInput();
 
 		yield return Decompress();
@@ -244,6 +248,21 @@ public class VoskSpeechToText : MonoBehaviour
 			_isDecompressing = true;
 			_decompressedModelPath = e.ExtractLocation;
 		}
+	}
+
+	//Quest/Android: ask the player for microphone access before using the mic.
+	//If they deny it, voice stays off and the dialogue buttons still work.
+	private IEnumerator RequestMicrophonePermission()
+	{
+#if UNITY_ANDROID && !UNITY_EDITOR
+		if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
+		{
+			Permission.RequestUserPermission(Permission.Microphone);
+			while (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
+				yield return null; // wait until the player taps Allow
+		}
+#endif
+		yield break;
 	}
 
 	//Wait until microphones are initialized
